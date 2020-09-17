@@ -1,59 +1,45 @@
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-
 import javax.security.auth.login.LoginException;
+import java.util.ArrayList;
 
-public class Main extends ListenerAdapter {
-    public static String gamestarter;
-    public static MessageChannel gamechannel;
-
-    public static MessageReceivedEvent messageReceivedEvent; //this is new
+public class Main extends ListenerAdapter{
     public static JDABuilder builder;
-    public static void main(String[] args) throws LoginException {
+    static MessageChannel messageChannel;
+    static User user;
+    ArrayList<RingOfFire> currentgames = new ArrayList<>();
+
+    public static void main(String[] args) throws LoginException{
         builder = new JDABuilder(AccountType.BOT);
-        String token = "Njk3NTA2NDYxNjMwMjAxOTI4.Xo4RkA.d67u55JBO72Jc_QWDHmPCoxIGuc";
-        builder.setToken(token);
-        builder.addEventListener(new Rhyme());
+        builder.setToken("Njk3NTA2NDYxNjMwMjAxOTI4.Xo4RkA.d67u55JBO72Jc_QWDHmPCoxIGuc");
+
         builder.addEventListener(new Main());
+        builder.addEventListener(new RingOfFire());
+        builder.addEventListener(new Choose());
         builder.addEventListener(new ThumbMaster());
         builder.addEventListener(new Heaven());
-        builder.addEventListener(new Choose());
-        builder.addEventListener(new Waterfall());
-        builder.addEventListener(new WordAssociation());
         builder.addEventListener(new Mate());
-        builder.addEventListener(new RingOfFire());
         builder.buildAsync();
     }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event){
-        messageReceivedEvent = event; //this is new
-
-        String message = event.getMessage().getContentDisplay();
-
-        if(message.equals("!play ring of fire")){
-            gamestarter = event.getAuthor().getName();
-            gamechannel = event.getChannel();
-            System.out.println("ring of fire");
-            RingOfFire ringOfFire = new RingOfFire();
-            ringOfFire.setup();
+        MessageChannel channel = event.getTextChannel();
+        if(event.getMessage().getContentDisplay().toLowerCase().equals("!play ring of fire") && !gameRunning(channel)){
+            currentgames.add(new RingOfFire());
+            currentgames.get(currentgames.size()-1).setMessageChannel(channel);
         }
-        if(message.equals("!play mate")){
-            RingOfFire.lastdrawer = event.getAuthor().getName();
-            gamechannel = event.getChannel();
-            gamestarter = event.getAuthor().getName();
-            new Player(gamestarter);
-            Mate.minigame();
+    }
+    public boolean gameRunning(MessageChannel channel){
+        for(RingOfFire r: currentgames){
+            if(r.getMessageChannel().equals(channel)){
+                return true;
+            }
         }
-        if(message.equals("!drink")){
-            gamechannel = event.getChannel();
-            gamestarter = event.getAuthor().getName();
-            Player player = Player.getPlayerById(gamestarter);
-            player.drink(gamechannel);
-        }
-        event.getGuild().getController();
+        return false;
     }
 }
