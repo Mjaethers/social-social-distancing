@@ -1,38 +1,34 @@
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.ArrayList;
 
 public class Heaven extends ListenerAdapter {
-    static String wordtotype;
-    static boolean iscardplayed = false;
-    static ArrayList<String> notrespondedplayers = new ArrayList<String>();
+    MessageChannel channel;
+    ArrayList<User> players = new ArrayList<>();
+    ArrayList<User> unrespondedplayers;
+    boolean playing = false;
 
+    public void setup(MessageChannel messagechannel, ArrayList<User> listofplayers){
+        channel = messagechannel;
+        players = listofplayers;
+        unrespondedplayers = new ArrayList<>();
+        unrespondedplayers.addAll(players);
+        playing = true;
+    }
     @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        if(iscardplayed && event.getMessage().getContentDisplay().equals("heaven")){
-            notrespondedplayers.remove(event.getAuthor().getName());
-            if(notrespondedplayers.size() == 1){
-                Main.gamechannel.sendMessage(notrespondedplayers.get(0) + " is the last").queue();
-                Player.getPlayerById(notrespondedplayers.get(0)).drink(Main.gamechannel);
-                iscardplayed = false;
+    public void onMessageReceived(MessageReceivedEvent event){
+        if(event.getChannel().equals(channel) && playing){
+            if(unrespondedplayers.size() > 1 && unrespondedplayers.contains(event.getAuthor())){
+                unrespondedplayers.remove(event.getAuthor());
+            }
+            else{
+                playing = false;
+                channel.sendMessage(unrespondedplayers.get(0).toString() + " was the last to respond").queue();
+                channel.sendMessage(unrespondedplayers.get(0).toString() + " drink!").queue();
             }
         }
-    }
-
-    public static void minigame(){
-        wordtotype = "heaven";
-        Main.gamechannel.sendMessage("heaven: everyone type heaven as fast as they can").queue();
-        Main.gamechannel.sendMessage("heaven").queue();
-        notrespondedplayers.clear();
-        notrespondedplayers.addAll(RingOfFire.players);
-        iscardplayed = true;
-    }
-    public static void minigame(String Word){
-        wordtotype = Word;
-        Main.gamechannel.sendMessage("type " + wordtotype + " as fast as you can").queue();
-        Main.gamechannel.sendMessage(wordtotype).queue();
-        notrespondedplayers.clear();
-        //ToDo
     }
 }
