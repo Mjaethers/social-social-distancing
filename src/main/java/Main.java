@@ -22,7 +22,6 @@ public class Main extends ListenerAdapter{
         builder.addEventListener(new Choose());
         builder.addEventListener(new ThumbMaster());
         builder.addEventListener(new Heaven());
-        builder.addEventListener(new Mate());
         builder.buildAsync();
     }
 
