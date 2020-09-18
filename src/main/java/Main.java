@@ -5,13 +5,13 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import javax.security.auth.login.LoginException;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Main extends ListenerAdapter{
     public static JDABuilder builder;
     static MessageChannel messageChannel;
     static User user;
-    ArrayList<RingOfFire> currentgames = new ArrayList<>();
+    HashMap<MessageChannel, RingOfFire> RunningGames = new HashMap<>();
 
     public static void main(String[] args) throws LoginException{
         builder = new JDABuilder(AccountType.BOT);
@@ -23,14 +23,13 @@ public class Main extends ListenerAdapter{
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event){
-
-    }
-    public boolean gameRunning(MessageChannel channel){
-        for(RingOfFire r: currentgames){
-            if(r.getMessageChannel().equals(channel)){
-                return true;
-            }
+        if(event.getMessage().getContentDisplay().toLowerCase().equals("!play ring of fire")){
+            RunningGames.put(event.getChannel(), new RingOfFire());
+            RunningGames.get(event.getChannel()).start(event);
         }
-        return false;
+        else if (RunningGames.containsKey(event.getChannel())){
+            RunningGames.get(event.getChannel()).onEventReceived(event);
+        }
     }
+
 }
