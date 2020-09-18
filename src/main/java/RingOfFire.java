@@ -67,7 +67,8 @@ public class RingOfFire extends ListenerAdapter {
                             Heaven heaven = new Heaven();
                             heaven.setup(channel, players);
                         case 7:
-                            //8 - mate";
+                            channel.sendMessage("8 - Mate").queue();
+                            channel.sendMessage(event.getAuthor().toString()+ ", choose a mate").queue();
                         case 8:
                             //9 - rhyme";
                         case 9:
