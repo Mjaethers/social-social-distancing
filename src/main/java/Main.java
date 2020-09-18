@@ -9,8 +9,6 @@ import java.util.HashMap;
 
 public class Main extends ListenerAdapter{
     public static JDABuilder builder;
-    static MessageChannel messageChannel;
-    static User user;
     HashMap<MessageChannel, RingOfFire> RunningGames = new HashMap<>();
 
     public static void main(String[] args) throws LoginException{
@@ -24,8 +22,7 @@ public class Main extends ListenerAdapter{
     @Override
     public void onMessageReceived(MessageReceivedEvent event){
         if(event.getMessage().getContentDisplay().toLowerCase().equals("!play ring of fire")){
-            RunningGames.put(event.getChannel(), new RingOfFire());
-            RunningGames.get(event.getChannel()).start(event);
+            RunningGames.put(event.getChannel(), new RingOfFire(event));
         }
         else if (RunningGames.containsKey(event.getChannel())){
             RunningGames.get(event.getChannel()).onEventReceived(event);

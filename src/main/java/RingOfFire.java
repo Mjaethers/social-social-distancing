@@ -10,78 +10,91 @@ import static java.lang.Thread.sleep;
 
 public class RingOfFire extends ListenerAdapter {
     boolean setup = true;
+    public boolean heaven = false;
     ArrayList<User> players = new ArrayList<>();
-    boolean running = false;
+    ArrayList unrespondedplayers = new ArrayList<>();
+    MessageChannel channel;
 
-    public void start(MessageReceivedEvent event){
+    public RingOfFire(MessageReceivedEvent event){
         System.out.println("Setup entered");
         event.getChannel().sendMessage("Type 'join' to join. Once all players have joined type 'start'. ").queue();
-        running = true;
     }
 
     public void onEventReceived(MessageReceivedEvent event){
-        MessageChannel channel = event.getChannel();
-        System.out.println("hello");
-        if(running){
-            //All code must go here
-            if(setup){
-                if(event.getMessage().getContentDisplay().toLowerCase().equals("join") && !players.contains(event.getAuthor())){
-                    players.add(event.getAuthor());
-                    System.out.println(event.getAuthor().toString() + "has joined the game.");
-                }
-                if(event.getMessage().getContentDisplay().toLowerCase().contains("start")){
-                    System.out.println("game is starting...");
-                    setup = false;
-                }
+        channel = event.getChannel();
+        if(setup){
+            if(event.getMessage().getContentDisplay().toLowerCase().equals("join") && !players.contains(event.getAuthor())){
+                players.add(event.getAuthor());
+                System.out.println(event.getAuthor().getName() + " has joined the game.");
             }
-            else{
-                if(event.getMessage().getContentDisplay().toLowerCase().contains("draw")){
-                    //Play Game
-                    Random r = new Random();
-                    switch(r.nextInt(12)){
-                        case 0:
-                            channel.sendMessage("1 - Waterfall").queue();
-                            waterfall(channel);
-                        case 1:
-                            channel.sendMessage("2 - Choose").queue();
-                            channel.sendMessage("Choose: " + event.getMessage().getAuthor().toString() + " mention someone who has to drink").queue();
-                            Choose choose = new Choose();
-                            choose.setup(event.getMessage().getAuthor(), channel);
-                        case 2:
-                            channel.sendMessage("3 - Me").queue();
-                            channel.sendMessage("Me: " + event.getMessage().getAuthor().toString() + " drink").queue();
-                        case 3:
-                            channel.sendMessage("4 - Whore").queue();
-                            channel.sendMessage("Whore: all the girls drink").queue();
-                        case 4:
-                            channel.sendMessage("5 - Thumb master").queue();
-                            channel.sendMessage("Thumbmaster: " + event.getAuthor().toString() + ", you are the thumb master").queue();
-                            ThumbMaster thumbMaster = new ThumbMaster();
-                            thumbMaster.setup(channel, event.getAuthor(), players);
-                        case 5:
-                            channel.sendMessage("6 - Dicks").queue();
-                            channel.sendMessage("Dicks: all the boys drink").queue();
-                        case 6:
-                            channel.sendMessage("7 - Heaven").queue();
-                            channel.sendMessage("Heaven: everyone type heaven as fast as they can").queue();
-                            Heaven heaven = new Heaven();
-                            heaven.setup(channel, players);
-                        case 7:
-                            channel.sendMessage("8 - Mate").queue();
-                            channel.sendMessage(event.getAuthor().toString()+ ", choose a mate").queue();
-                        case 8:
-                            //9 - rhyme";
-                        case 9:
-                            //10 - Related Words";
-                        case 10:
-                            channel.sendMessage("Jack - Make a rule").queue();
-                            channel.sendMessage("Make a rule: " + event.getMessage().getAuthor().toString() + "make a new rule").queue();
-                        case 11:
-                            channel.sendMessage("Queen - Questionmaster").queue();
-                            channel.sendMessage("Questionmaster: " + event.getMessage().getAuthor().toString() + " you are now the questionmaster").queue();
-                        case 12:
-                            channel.sendMessage("King - Everyone drink").queue();
-                    }
+            if(event.getMessage().getContentDisplay().toLowerCase().contains("start") && !event.getAuthor().isBot()){
+                System.out.println("game is starting...");
+                unrespondedplayers.addAll(players);
+                setup = false;
+            }
+        }
+        if(heaven){
+            heaven(event);
+        }
+        else{
+            if(event.getMessage().getContentDisplay().toLowerCase().contains("draw") && !event.getAuthor().isBot()){
+                Random r = new Random();
+                int number = r.nextInt(12);
+                System.out.println(number);
+                switch(number){
+                    case 0:
+                        channel.sendMessage("1 - Waterfall").queue();
+                        waterfall(channel);
+                        break;
+                    case 1:
+                        channel.sendMessage("2 - Choose").queue();
+                        channel.sendMessage("Choose: " + event.getMessage().getAuthor().getName() + " mention someone who has to drink").queue();
+                        Choose choose = new Choose();
+                        choose.setup(event.getMessage().getAuthor(), channel);
+                        break;
+                    case 2:
+                        channel.sendMessage("3 - Me").queue();
+                        channel.sendMessage("Me: " + event.getMessage().getAuthor().getName() + " drink").queue();
+                        break;
+                    case 3:
+                        channel.sendMessage("4 - Whore").queue();
+                        channel.sendMessage("Whore: all the girls drink").queue();
+                        break;
+                    case 4:
+                        channel.sendMessage("5 - Thumb master").queue();
+                        channel.sendMessage("Thumbmaster: " + event.getAuthor().getName() + ", you are the thumb master").queue();
+                        ThumbMaster thumbMaster = new ThumbMaster();
+                        thumbMaster.setup(channel, event.getAuthor(), players);
+                        break;
+                    case 5:
+                        channel.sendMessage("6 - Dicks").queue();
+                        channel.sendMessage("Dicks: all the boys drink").queue();
+                        break;
+                    case 6:
+                        channel.sendMessage("7 - Heaven").queue();
+                        channel.sendMessage("Heaven: everyone type heaven as fast as they can").queue();
+                        heaven = true;
+                        break;
+                    case 7:
+                        //8 - mate";
+                        break;
+                    case 8:
+                        //9 - rhyme";
+                        break;
+                    case 9:
+                        //10 - Related Words";
+                        break;
+                    case 10:
+                        channel.sendMessage("Jack - Make a rule").queue();
+                        channel.sendMessage("Make a rule: " + event.getMessage().getAuthor().getName() + "make a new rule").queue();
+                        break;
+                    case 11:
+                        channel.sendMessage("Queen - Questionmaster").queue();
+                        channel.sendMessage("Questionmaster: " + event.getMessage().getAuthor().getName() + " you are now the questionmaster").queue();
+                        break;
+                    case 12:
+                        channel.sendMessage("King - Everyone drink").queue();
+                        break;
                 }
             }
         }
@@ -105,5 +118,15 @@ public class RingOfFire extends ListenerAdapter {
             }
         }
         channel.sendMessage("Stopped drinking").queue();
+    }
+    public void heaven(MessageReceivedEvent event){
+        if(unrespondedplayers.size() > 1 && unrespondedplayers.contains(event.getAuthor())){
+            unrespondedplayers.remove(event.getAuthor());
+        }
+        else{
+            heaven = false;
+            channel.sendMessage(unrespondedplayers.get(0).toString()+ " was the last to respond").queue();
+            channel.sendMessage(unrespondedplayers.get(0).toString() + " drink!").queue();
+        }
     }
 }
