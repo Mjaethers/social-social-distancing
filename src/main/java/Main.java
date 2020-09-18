@@ -18,21 +18,12 @@ public class Main extends ListenerAdapter{
         builder.setToken("Njk3NTA2NDYxNjMwMjAxOTI4.Xo4RkA.d67u55JBO72Jc_QWDHmPCoxIGuc");
 
         builder.addEventListener(new Main());
-        builder.addEventListener(new RingOfFire());
-        builder.addEventListener(new Choose());
-        builder.addEventListener(new ThumbMaster());
-        builder.addEventListener(new Heaven());
-        builder.addEventListener(new Mate());
         builder.buildAsync();
     }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event){
-        MessageChannel channel = event.getTextChannel();
-        if(event.getMessage().getContentDisplay().toLowerCase().equals("!play ring of fire") && !gameRunning(channel)){
-            currentgames.add(new RingOfFire());
-            currentgames.get(currentgames.size()-1).setMessageChannel(channel);
-        }
+
     }
     public boolean gameRunning(MessageChannel channel){
         for(RingOfFire r: currentgames){
