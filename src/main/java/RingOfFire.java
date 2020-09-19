@@ -13,7 +13,7 @@ public class RingOfFire extends ListenerAdapter {
     public boolean heaven = false;
     public User mater = null;
     ArrayList<User> players = new ArrayList<>();
-    ArrayList unrespondedplayers = new ArrayList<>();
+    ArrayList<User> unrespondedplayers = new ArrayList<>();
     MessageChannel channel;
 
     public RingOfFire(MessageReceivedEvent event){
@@ -44,9 +44,7 @@ public class RingOfFire extends ListenerAdapter {
         else{
             if(event.getMessage().getContentDisplay().toLowerCase().contains("draw") && !event.getAuthor().isBot()){
                 Random r = new Random();
-                int number = 7;//r.nextInt(12);
-                System.out.println(number);
-                switch(number){
+                switch(r.nextInt(12)){
                     case 0:
                         channel.sendMessage("1 - Waterfall").queue();
                         waterfall(channel);
@@ -93,7 +91,7 @@ public class RingOfFire extends ListenerAdapter {
                         break;
                     case 10:
                         channel.sendMessage("Jack - Make a rule").queue();
-                        channel.sendMessage("Make a rule: " + event.getMessage().getAuthor().getName() + "make a new rule").queue();
+                        channel.sendMessage("Make a rule: " + event.getMessage().getAuthor().getName() + " make a new rule").queue();
                         break;
                     case 11:
                         channel.sendMessage("Queen - Questionmaster").queue();
@@ -133,8 +131,8 @@ public class RingOfFire extends ListenerAdapter {
         }
         else{
             heaven = false;
-            channel.sendMessage(unrespondedplayers.get(0).toString()+ " was the last to respond").queue();
-            channel.sendMessage(unrespondedplayers.get(0).toString() + " drink!").queue();
+            channel.sendMessage(unrespondedplayers.get(0).getName()+ " was the last to respond").queue();
+            channel.sendMessage(unrespondedplayers.get(0).getName() + " drink!").queue();
         }
     }
 

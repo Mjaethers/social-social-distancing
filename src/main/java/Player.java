@@ -38,10 +38,10 @@ public class Player {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.playerid.getName());
         for(Player p : this.mates){
-            stringBuilder.append(", and ")
+            stringBuilder.append(", and")
                          .append(p.getPlayerId().getName());
         }
-        stringBuilder.append("drink");
+        stringBuilder.append(" drink");
         return stringBuilder.toString();
     }
 
