@@ -11,6 +11,7 @@ import static java.lang.Thread.sleep;
 public class RingOfFire extends ListenerAdapter {
     boolean setup = true;
     public boolean heaven = false;
+    public User mater = null;
     ArrayList<User> players = new ArrayList<>();
     ArrayList unrespondedplayers = new ArrayList<>();
     MessageChannel channel;
@@ -23,8 +24,9 @@ public class RingOfFire extends ListenerAdapter {
     public void onEventReceived(MessageReceivedEvent event){
         channel = event.getChannel();
         if(setup){
-            if(event.getMessage().getContentDisplay().toLowerCase().equals("join") && !players.contains(event.getAuthor())){
+            if(event.getMessage().getContentDisplay().toLowerCase().equals("join") && !Player.isPlayer(event.getAuthor())){
                 players.add(event.getAuthor());
+                new Player(event.getAuthor());
                 System.out.println(event.getAuthor().getName() + " has joined the game.");
             }
             if(event.getMessage().getContentDisplay().toLowerCase().contains("start") && !event.getAuthor().isBot()){
@@ -36,10 +38,13 @@ public class RingOfFire extends ListenerAdapter {
         if(heaven){
             heaven(event);
         }
+        if(mater != null){
+            mate(event);
+        }
         else{
             if(event.getMessage().getContentDisplay().toLowerCase().contains("draw") && !event.getAuthor().isBot()){
                 Random r = new Random();
-                int number = r.nextInt(12);
+                int number = 7;//r.nextInt(12);
                 System.out.println(number);
                 switch(number){
                     case 0:
@@ -76,7 +81,9 @@ public class RingOfFire extends ListenerAdapter {
                         heaven = true;
                         break;
                     case 7:
-                        //8 - mate";
+                        channel.sendMessage("8 - Mate").queue();
+                        channel.sendMessage("Mate: " + event.getAuthor().getName() + " choose a mate by mentioning them").queue();
+                        mater = event.getAuthor();
                         break;
                     case 8:
                         //9 - rhyme";
@@ -119,6 +126,7 @@ public class RingOfFire extends ListenerAdapter {
         }
         channel.sendMessage("Stopped drinking").queue();
     }
+
     public void heaven(MessageReceivedEvent event){
         if(unrespondedplayers.size() > 1 && unrespondedplayers.contains(event.getAuthor())){
             unrespondedplayers.remove(event.getAuthor());
@@ -128,5 +136,13 @@ public class RingOfFire extends ListenerAdapter {
             channel.sendMessage(unrespondedplayers.get(0).toString()+ " was the last to respond").queue();
             channel.sendMessage(unrespondedplayers.get(0).toString() + " drink!").queue();
         }
+    }
+
+    public void mate(MessageReceivedEvent event){
+        if(event.getAuthor().equals(mater) && !event.getMessage().getMentionedMembers().isEmpty()){
+            event.getChannel().sendMessage(mater.getName() + ", you are now mates with: " + event.getMessage().getMentionedMembers().get(0).getEffectiveName()).queue();
+            event.getChannel().sendMessage(Player.getPlayerByID(mater).getDrinkText()).queue();
+        }
+
     }
 }
