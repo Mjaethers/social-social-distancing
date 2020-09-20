@@ -22,14 +22,14 @@ public class Player {
     @Override
     public boolean equals(Object object){
         if(object instanceof Player){
-            return (((Player) object).getPlayerId() == this.getPlayerId());
+            return (((Player) object).getUserFromPlayer() == this.getUserFromPlayer());
         }
         return false;
     }
 
     public static Player getPlayerFromUser(User User, RingOfFire Game){
         for(Player p : lobbies.get(Game)){
-            if(p.getPlayerId().equals(User)){
+            if(p.getUserFromPlayer().equals(User)){
                 return p;
             }
         }
@@ -43,12 +43,12 @@ public class Player {
     public static ArrayList<User> getUsersInLobby(RingOfFire Game){
         ArrayList<User> users = new ArrayList<>();
         for(Player p : lobbies.get(Game)){
-            users.add(p.getPlayerId());
+            users.add(p.getUserFromPlayer());
         }
         return users;
     }
 
-    public User getPlayerId(){
+    public User getUserFromPlayer(){
         return playerid;
     }
 
@@ -72,7 +72,7 @@ public class Player {
         stringBuilder.append(this.playerid.getName());
         for(Player p : this.mates){
             stringBuilder.append(", and ")
-                         .append(p.getPlayerId().getName());
+                         .append(p.getUserFromPlayer().getName());
         }
         stringBuilder.append("drink");
         return stringBuilder.toString();
