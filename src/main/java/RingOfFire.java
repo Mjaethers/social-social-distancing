@@ -12,8 +12,8 @@ public class RingOfFire extends ListenerAdapter {
     boolean setup = true;
     public boolean heaven = false;
     public User mater = null;
-    ArrayList<User> players = new ArrayList<>();
-    ArrayList unrespondedplayers = new ArrayList<>();
+    ArrayList<Player> players = new ArrayList<>();
+    ArrayList<Player> unrespondedplayers = new ArrayList<>();
     MessageChannel channel;
 
     public RingOfFire(MessageReceivedEvent event){
@@ -24,10 +24,11 @@ public class RingOfFire extends ListenerAdapter {
     public void onEventReceived(MessageReceivedEvent event){
         channel = event.getChannel();
         if(setup){
-            if(event.getMessage().getContentDisplay().toLowerCase().equals("join") && !Player.isPlayer(event.getAuthor())){
-                players.add(event.getAuthor());
-                new Player(event.getAuthor());
+            Player p;
+            if(event.getMessage().getContentDisplay().toLowerCase().equals("join") && !players.contains(p = new Player(event.getAuthor(), this))){
+                players.add(p);
                 System.out.println(event.getAuthor().getName() + " has joined the game.");
+                System.out.println(players.toString());
             }
             if(event.getMessage().getContentDisplay().toLowerCase().contains("start") && !event.getAuthor().isBot()){
                 System.out.println("game is starting...");
@@ -59,7 +60,7 @@ public class RingOfFire extends ListenerAdapter {
                         break;
                     case 2:
                         channel.sendMessage("3 - Me").queue();
-                        channel.sendMessage("Me: " + event.getMessage().getAuthor().getName() + " drink").queue();
+                        channel.sendMessage("Me: " + Player.getPlayerFromUser(event.getMessage().getAuthor(), this).getDrinkText() + " drink").queue();
                         break;
                     case 3:
                         channel.sendMessage("4 - Whore").queue();
@@ -69,7 +70,7 @@ public class RingOfFire extends ListenerAdapter {
                         channel.sendMessage("5 - Thumb master").queue();
                         channel.sendMessage("Thumbmaster: " + event.getAuthor().getName() + ", you are the thumb master").queue();
                         ThumbMaster thumbMaster = new ThumbMaster();
-                        thumbMaster.setup(channel, event.getAuthor(), players);
+                        thumbMaster.setup(channel, event.getAuthor(), Player.getUsersInLobby(this));
                         break;
                     case 5:
                         channel.sendMessage("6 - Dicks").queue();
@@ -112,8 +113,8 @@ public class RingOfFire extends ListenerAdapter {
         try{
             sleep(5000);
         }
-        catch(Exception e){
-            System.out.println(e);
+        catch(InterruptedException e){
+            System.out.println(e.toString());
         }
         for(int i =0; i<rand.nextInt(45); i++){
             try{
@@ -121,27 +122,29 @@ public class RingOfFire extends ListenerAdapter {
                 channel.sendMessage("Drinking...").queue();
             }
             catch(InterruptedException e){
-                System.out.println(e);
+                System.out.println(e.toString());
             }
         }
         channel.sendMessage("Stopped drinking").queue();
     }
 
     public void heaven(MessageReceivedEvent event){
-        if(unrespondedplayers.size() > 1 && unrespondedplayers.contains(event.getAuthor())){
-            unrespondedplayers.remove(event.getAuthor());
+        if(unrespondedplayers.size() > 1 && unrespondedplayers.contains(Player.getPlayerFromUser(event.getAuthor(), this))){
+            unrespondedplayers.remove(Player.getPlayerFromUser(event.getAuthor(), this));
         }
         else{
             heaven = false;
             channel.sendMessage(unrespondedplayers.get(0).toString()+ " was the last to respond").queue();
-            channel.sendMessage(unrespondedplayers.get(0).toString() + " drink!").queue();
+            channel.sendMessage(unrespondedplayers.get(0).getDrinkText()).queue();
         }
     }
 
     public void mate(MessageReceivedEvent event){
-        if(event.getAuthor().equals(mater) && !event.getMessage().getMentionedMembers().isEmpty()){
-            event.getChannel().sendMessage(mater.getName() + ", you are now mates with: " + event.getMessage().getMentionedMembers().get(0).getEffectiveName()).queue();
-            event.getChannel().sendMessage(Player.getPlayerByID(mater).getDrinkText()).queue();
+        if(event.getAuthor().equals(mater) && players.contains(Player.getPlayerFromUser(event.getMessage().getMentionedUsers().get(0), this))){
+            Player.getPlayerFromUser(mater, this).addMate(Player.getPlayerFromUser(event.getMessage().getMentionedUsers().get(0), this));
+            event.getChannel().sendMessage(mater.getName() + ", you are now mates with: " + Player.getPlayerFromUser(mater, this).getMates());
+            event.getChannel().sendMessage(Player.getPlayerFromUser(mater, this).getDrinkText()).queue();
+            mater = null;
         }
 
     }
