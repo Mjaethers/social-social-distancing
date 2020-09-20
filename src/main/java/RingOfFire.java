@@ -60,7 +60,7 @@ public class RingOfFire extends ListenerAdapter {
                         break;
                     case 2:
                         channel.sendMessage("3 - Me").queue();
-                        channel.sendMessage("Me: " + Player.getPlayerFromUser(event.getMessage().getAuthor(), this).getDrinkText() + " drink").queue();
+                        channel.sendMessage("Me: " + Player.getPlayerFromUser(event.getMessage().getAuthor(), this).getDrinkText()).queue();
                         break;
                     case 3:
                         channel.sendMessage("4 - Whore").queue();
