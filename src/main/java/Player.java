@@ -74,7 +74,7 @@ public class Player {
             stringBuilder.append(", and ")
                          .append(p.getUserFromPlayer().getName());
         }
-        stringBuilder.append("drink");
+        stringBuilder.append(" drink");
         return stringBuilder.toString();
     }
 }
