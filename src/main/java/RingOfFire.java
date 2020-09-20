@@ -134,7 +134,7 @@ public class RingOfFire extends ListenerAdapter {
         }
         else{
             heaven = false;
-            channel.sendMessage(unrespondedplayers.get(0).toString()+ " was the last to respond").queue();
+            channel.sendMessage(unrespondedplayers.get(0).getUserFromPlayer()+ " was the last to respond").queue();
             channel.sendMessage(unrespondedplayers.get(0).getDrinkText()).queue();
         }
     }
