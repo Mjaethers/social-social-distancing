@@ -2,20 +2,53 @@ import net.dv8tion.jda.core.entities.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class Player {
     private final User playerid;
     private ArrayList<Player> mates;
-    private static ArrayList<Player> players = new ArrayList<Player>();
+    private static HashMap<RingOfFire, ArrayList<Player>> lobbies = new HashMap<>();
 
-    Player(User ID){
+    Player(User ID, RingOfFire Game){
+        if(lobbies.get(Game) == null){
+            lobbies.put(Game, new ArrayList<Player>());
+        }
+        lobbies.get(Game).add(this);
         playerid = ID;
         mates  = new ArrayList<Player>();
-        players.add(this);
         System.out.println("new player: " + playerid);
     }
 
-    public User getPlayerId(){
+    @Override
+    public boolean equals(Object object){
+        if(object instanceof Player){
+            return (((Player) object).getPlayerAsUser() == this.getPlayerAsUser());
+        }
+        return false;
+    }
+
+    public static Player getPlayerFromUser(User User, RingOfFire Game){
+        for(Player p : lobbies.get(Game)){
+            if(p.getPlayerAsUser().equals(User)){
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public static ArrayList<Player> getPlayersInLobby(RingOfFire Game){
+        return lobbies.get(Game);
+    }
+
+    public static ArrayList<User> getUsersInLobby(RingOfFire Game){
+        ArrayList<User> users = new ArrayList<>();
+        for(Player p : lobbies.get(Game)){
+            users.add(p.getPlayerAsUser());
+        }
+        return users;
+    }
+
+    public User getPlayerAsUser(){
         return playerid;
     }
 
@@ -39,26 +72,9 @@ public class Player {
         stringBuilder.append(this.playerid.getName());
         for(Player p : this.mates){
             stringBuilder.append(", and ")
-                         .append(p.getPlayerId().getName());
+                         .append(p.getPlayerAsUser().getName());
         }
         stringBuilder.append("drink");
         return stringBuilder.toString();
-    }
-
-    public static ArrayList<Player> getPlayers(){
-        return players;
-    }
-
-    public static Player getPlayerByID(User ID){
-        for(Player p : players){
-            if(p.getPlayerId().equals(ID)){
-                return p;
-            }
-        }
-        return null;
-    }
-
-    public static boolean isPlayer(User ID){
-        return (getPlayerByID(ID) != null);
     }
 }
