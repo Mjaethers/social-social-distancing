@@ -1,7 +1,7 @@
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -151,7 +151,7 @@ public class RingOfFire{
     public void mate(MessageReceivedEvent event){
         if(event.getAuthor().equals(mater) && players.contains(Player.getPlayerFromUser(event.getMessage().getMentionedUsers().get(0), this))){
             Player.getPlayerFromUser(mater, this).addMate(Player.getPlayerFromUser(event.getMessage().getMentionedUsers().get(0), this));
-            event.getChannel().sendMessage(mater.getName() + ", you are now mates with: " + Player.getPlayerFromUser(mater, this).getMates());
+            event.getChannel().sendMessage(mater.getName() + ", you are now mates with: " + Player.getPlayerFromUser(mater, this).getMates()).queue();
             mater = null;
         }
     }
