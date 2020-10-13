@@ -55,6 +55,15 @@ public class Player {
     public ArrayList<Player> getMates(){
         return mates;
     }
+    public String getMatesString(){
+        StringBuilder sb = new StringBuilder();
+        for(Player m: mates){
+            sb.append(m.getName());
+            sb.append(", ");
+        }
+        sb.delete(sb.length()-2, sb.length()-1);
+        return sb.toString();
+    }
 
     public boolean hasMate(Player Player){
         return mates.contains(Player);

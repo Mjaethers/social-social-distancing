@@ -37,6 +37,7 @@ public class RingOfFire{
                 }
                 if(event.getMessage().getContentDisplay().toLowerCase().contains("start") && !event.getAuthor().isBot()){
                     System.out.println("game is starting...");
+                    channel.sendMessage("It is is " + players.get(playerturn%(players.size())).getName() + " turn to draw.").queue();
                     unrespondedplayers.addAll(players);
                     setup = false;
                 }
@@ -170,7 +171,7 @@ public class RingOfFire{
     public void mate(MessageReceivedEvent event){
         if(event.getAuthor().equals(mater) && players.contains(Player.getPlayerFromUser(event.getMessage().getMentionedUsers().get(0), this))){
             Player.getPlayerFromUser(mater, this).addMate(Player.getPlayerFromUser(event.getMessage().getMentionedUsers().get(0), this));
-            event.getChannel().sendMessage(mater.getName() + ", you are now mates with: " + Player.getPlayerFromUser(mater, this).getMates()).queue();
+            event.getChannel().sendMessage(mater.getName() + ", you are now mates with: " + Player.getPlayerFromUser(mater, this).getMatesString()).queue();
             mater = null;
         }
     }
