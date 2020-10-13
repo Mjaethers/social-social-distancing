@@ -66,6 +66,9 @@ public class Player {
             Player.addMate(this);
         }
     }
+    public String getName(){
+        return this.getUserFromPlayer().getName();
+    }
 
     public String getDrinkText(){
         StringBuilder stringBuilder = new StringBuilder();

@@ -27,6 +27,13 @@ public class Main extends ListenerAdapter{
         else if (RunningGames.containsKey(event.getChannel())){
             RunningGames.get(event.getChannel()).onEventReceived(event);
         }
+        if(event.getMessage().getContentDisplay().toLowerCase().equals("!rules")){
+            event.getChannel().sendMessage(rules()).queue();
+        }
+    }
+    public String rules(){
+        String ruleset = "ToDo";
+        return ruleset;
     }
 
 }
