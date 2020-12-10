@@ -1,6 +1,6 @@
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 
 import java.util.ArrayList;
@@ -22,10 +22,11 @@ public class RingOfFire{
     public RingOfFire(MessageReceivedEvent event){
         System.out.println("Setup entered");
         event.getChannel().sendMessage("Type 'join' to join. Once all players have joined type 'start'. ").queue();
+        event.getChannel().sendMessage("View the rules by typing !rules").queue();
         playerturn = 0;
     }
 
-    public void onEventReceived(MessageReceivedEvent event){
+    public void onMessageReceived(MessageReceivedEvent event){
         if(!event.getAuthor().isBot()){
             channel = event.getChannel();
             if(setup){
@@ -135,9 +136,9 @@ public class RingOfFire{
     }
     public static void waterfall(MessageChannel channel){
         Random rand = new Random();
-        channel.sendMessage("Waterfall: no one stop drinking until I stop. Start when I do").queue();
+        channel.sendMessage("Waterfall: no one stop drinking until I stop. Start when I do (in 5s)").queue();
         try{
-            sleep(3000);
+            sleep(5000);
         }
         catch(InterruptedException e){
             System.out.println(e.toString());
