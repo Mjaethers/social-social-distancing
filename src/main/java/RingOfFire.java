@@ -34,7 +34,6 @@ public class RingOfFire{
                 if(event.getMessage().getContentDisplay().toLowerCase().equals("join") && !players.contains(p = new Player(event.getAuthor(), this))){
                     players.add(p);
                     System.out.println(event.getAuthor().getName() + " has joined the game.");
-                    System.out.println(players.toString());
                 }
                 if(event.getMessage().getContentDisplay().toLowerCase().contains("start") && !event.getAuthor().isBot()){
                     System.out.println("game is starting...");
