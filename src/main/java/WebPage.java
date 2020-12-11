@@ -4,8 +4,8 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class WebPage {
-    String pageContents;
-    WebPage(String URL){
+    public static String connect(String URL){
+        String pageContents;
         StringBuilder stringBuilder = new StringBuilder();
         try{
             String line;
@@ -27,11 +27,11 @@ public class WebPage {
             System.out.println(e);
             pageContents = "ded";
         }
+        return pageContents;
     }
     public static ArrayList<String> getWordsFromDataMuse(String url){
-        WebPage datamusereference = new WebPage(url);
         ArrayList<String> words = new ArrayList<String>();
-        String datamuselist = datamusereference.pageContents;
+        String datamuselist = connect(url);
 
         int index = datamuselist.indexOf("word\":");
         while(index < datamuselist.lastIndexOf("word\":")){
@@ -48,16 +48,6 @@ public class WebPage {
     public static ArrayList<String> getRhymingWords(String Word){
         ArrayList<String> rhymingwords = new ArrayList<String>();
         return(getWordsFromDataMuse("https://api.datamuse.com/words?rel_rhy=" + Word));
-    }
-    public String readPage(){
-        return(pageContents);
-    }
-    public String readLine(int line) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new StringReader(pageContents));
-        for(int i = 0; i<line; i++) {
-            bufferedReader.readLine();
-        }
-        return(bufferedReader.readLine());
     }
 }
 
