@@ -21,7 +21,7 @@ public class ThumbMaster extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event){
         if(event.getChannel().equals(channel)){
-            if (event.getAuthor().equals(master) && event.getMessage().toString().toLowerCase().equals("thumb")){
+            if (event.getAuthor().equals(master) && event.getMessage().getContentDisplay().toLowerCase().equals("thumb")){
                 unrespondedplayers = new ArrayList<>();
                 unrespondedplayers.addAll(players);
                 unrespondedplayers.remove(master);
@@ -29,7 +29,7 @@ public class ThumbMaster extends ListenerAdapter {
             }
             if(gamerunning){
                 if(unrespondedplayers.size() > 1){
-                    if(unrespondedplayers.contains(event.getMessage().getAuthor()) && event.getMessage().toString().toLowerCase().equals("thumb")){
+                    if(unrespondedplayers.contains(event.getMessage().getAuthor()) && event.getMessage().getContentDisplay().toLowerCase().equals("thumb")){
                         unrespondedplayers.remove(event.getAuthor());
                     }
                 }

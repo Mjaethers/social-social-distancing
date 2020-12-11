@@ -15,11 +15,14 @@ public class RingOfFire{
     public boolean playingrelatedwords = false;
     public boolean playingrhymingwords = false;
     public User mater = null;
+    public ArrayList<String> rhymingwords;
+    public ArrayList<String> relatedwords;
     ArrayList<Player> players = new ArrayList<>();
     ArrayList<Player> unrespondedplayers = new ArrayList<>();
     MessageChannel channel;
     User chooser;
     int playerturn;
+    public String currentWord;
     String[] startingwords = new String[]{"cheese", "cow", "hat", "car", "toilet", "animal", "radio", "phone", "bread", "food", "cat", "toy", "dog", "pet", "house", "door", "truck", "cold"};
 
     public RingOfFire(MessageReceivedEvent event){
@@ -27,6 +30,8 @@ public class RingOfFire{
         event.getChannel().sendMessage("Type 'join' to join. Once all players have joined type 'start'. ").queue();
         event.getChannel().sendMessage("View the rules by typing !rules").queue();
         playerturn = 0;
+        Random randomword = new Random();
+        currentWord = startingwords[randomword.nextInt(startingwords.length)];
     }
 
     public void onMessageReceived(MessageReceivedEvent event){
@@ -46,10 +51,10 @@ public class RingOfFire{
                 }
             }
             if(playingrelatedwords){
-                relatedwords(event);
+                relatedwords(event, currentWord);
             }
             if(playingrhymingwords){
-                rhymingwords(event);
+                rhymingwords(event, currentWord);
             }
             if(heaven){
                 heaven(event);
@@ -62,10 +67,6 @@ public class RingOfFire{
                 mate(event);
             }
             else{
-                for(Player p: players){
-                    System.out.println(p.toString());
-                    System.out.println(players.size());
-                }
                 if(event.getMessage().getContentDisplay().toLowerCase().contains("draw") && event.getAuthor().equals(players.get(playerturn%(players.size())).getUserFromPlayer())){
                     Random r = new Random();
                     switch(r.nextInt(12)){
@@ -118,12 +119,18 @@ public class RingOfFire{
                         case 8:
                             channel.sendMessage("9 - rhyme").queue();
                             channel.sendMessage("Last to say a rhyming word loses - no saying the same word twice!");
+                            channel.sendMessage("Word is " + currentWord + "! Go!").queue();
+                            rhymingwords = new ArrayList<>();
+                            rhymingwords = WebPage.getRhymingWords(currentWord);
                             playingrhymingwords = true;
                             channel.sendMessage("It is is " + players.get(++playerturn%(players.size())).getName() + " turn to draw.").queue();
                             break;
                         case 9:
                             channel.sendMessage("10 - Related Words").queue();
                             channel.sendMessage("Last to say a related word loses - no saying the same word twice!").queue();
+                            channel.sendMessage("Word is " + currentWord + "! Go!").queue();
+                            relatedwords = new ArrayList<>();
+                            relatedwords = WebPage.getRelatedWords(currentWord);
                             playingrelatedwords = true;
                             channel.sendMessage("It is is " + players.get(++playerturn%(players.size())).getName() + " turn to draw.").queue();
                             break;
@@ -168,12 +175,12 @@ public class RingOfFire{
         channel.sendMessage("Stopped drinking").queue();
     }
     public void heaven(MessageReceivedEvent event){
-        if(unrespondedplayers.size() > 1 && unrespondedplayers.contains(Player.getPlayerFromUser(event.getAuthor(), this))){
+        if(unrespondedplayers.size() > 1 && unrespondedplayers.contains(Player.getPlayerFromUser(event.getAuthor(), this)) && event.getMessage().toString().contains("heaven")){
             unrespondedplayers.remove(Player.getPlayerFromUser(event.getAuthor(), this));
         }
-        else{
+        if(unrespondedplayers.size() == 1){
             heaven = false;
-            channel.sendMessage(unrespondedplayers.get(0).getUserFromPlayer().getName()+ " was the last to respond").queue();
+            channel.sendMessage(unrespondedplayers.get(0).getUserFromPlayer().getName()+ " was the last to respond to heaven").queue();
             channel.sendMessage(unrespondedplayers.get(0).getDrinkText()).queue();
             unrespondedplayers.clear();
             unrespondedplayers.addAll(players);
@@ -187,63 +194,71 @@ public class RingOfFire{
             mater = null;
         }
     }
-    public void choose(MessageReceivedEvent event, User chooser){
+    public void choose(MessageReceivedEvent event, User chooser) throws NullPointerException{
         if(event.getMessage().getAuthor().equals(chooser) && !event.getMessage().getMentionedMembers().isEmpty()){
-
             event.getChannel().sendMessage(Player.getPlayerFromUser(event.getMessage().getMentionedUsers().get(0), this).getDrinkText()).queue();
         }
     }
-    public void relatedwords(MessageReceivedEvent event){
-        String word;
-        Random randomword = new Random();
-        ArrayList<String> relatedwords = new ArrayList<>();
-        word = startingwords[randomword.nextInt()];
-        relatedwords = WebPage.getRelatedWords(word);
-        channel.sendMessage("Word is " + word + "! Go!").queue();
-        while(unrespondedplayers.size() > 1){
-            if(unrespondedplayers.contains(Player.getPlayerFromUser(event.getAuthor(), this)) && relatedwords.contains(event.getMessage().toString())){
-                relatedwords.remove(event.getMessage().toString());
+    public void relatedwords(MessageReceivedEvent event, String word){
+        System.out.println("Playing related words");
+        System.out.println(event.getMessage().getContentDisplay());
+        for(String string: relatedwords){
+            System.out.println(string);
+        }
+        if(unrespondedplayers.size() > 1){
+            if(unrespondedplayers.contains(Player.getPlayerFromUser(event.getAuthor(), this)) && relatedwords.contains(event.getMessage().getContentDisplay())){
+                relatedwords.remove(event.getMessage().getContentDisplay());
                 unrespondedplayers.remove(Player.getPlayerFromUser(event.getAuthor(), this));
             }
-            if(unrespondedplayers.contains(Player.getPlayerFromUser(event.getAuthor(), this)) && !relatedwords.contains(event.getMessage().toString())){
+            else if(unrespondedplayers.contains(Player.getPlayerFromUser(event.getAuthor(), this)) && !relatedwords.contains(event.getMessage().getContentDisplay())){
                 //wrong word
                 playingrelatedwords = false;
                 channel.sendMessage(unrespondedplayers.get(0).getName() + "said a word that was not related!");
                 channel.sendMessage(unrespondedplayers.get(0).getDrinkText());
                 unrespondedplayers.addAll(players);
-                return;
+                Random randomword = new Random();
+                currentWord = startingwords[randomword.nextInt(startingwords.length)];
             }
         }
-        //Only one player left
-        playingrelatedwords = false;
-        channel.sendMessage(unrespondedplayers.get(0).getName() + "was last!");
-        channel.sendMessage(unrespondedplayers.get(0).getDrinkText());
-        unrespondedplayers.addAll(players);
+        if(unrespondedplayers.size() == 1){
+            //Only one player left
+            playingrelatedwords = false;
+            channel.sendMessage(unrespondedplayers.get(0).getName() + "was last!");
+            channel.sendMessage(unrespondedplayers.get(0).getDrinkText());
+            unrespondedplayers.addAll(players);
+            Random randomword = new Random();
+            currentWord = startingwords[randomword.nextInt(startingwords.length)];
+        }
     }
-    public void rhymingwords(MessageReceivedEvent event){
-        String word;
-        Random randomword = new Random();
-        ArrayList<String> rhymingwords = new ArrayList<>();
-        word = startingwords[randomword.nextInt()];
-        rhymingwords = WebPage.getRelatedWords(word);
-        while(unrespondedplayers.size() > 1){
-            if(unrespondedplayers.contains(Player.getPlayerFromUser(event.getAuthor(), this)) && rhymingwords.contains(event.getMessage().toString())){
-                rhymingwords.remove(event.getMessage().toString());
+    public void rhymingwords(MessageReceivedEvent event, String word){
+        System.out.println("Playing rhyming words");
+        System.out.println(event.getMessage().getContentDisplay());
+        for(String string: rhymingwords){
+            System.out.println(string);
+        }
+        if(unrespondedplayers.size() > 1){
+            if(unrespondedplayers.contains(Player.getPlayerFromUser(event.getAuthor(), this)) && rhymingwords.contains(event.getMessage().getContentDisplay())){
+                rhymingwords.remove(event.getMessage().getContentDisplay());
                 unrespondedplayers.remove(Player.getPlayerFromUser(event.getAuthor(), this));
             }
-            if(unrespondedplayers.contains(Player.getPlayerFromUser(event.getAuthor(), this)) && !rhymingwords.contains(event.getMessage().toString())){
+            else if(unrespondedplayers.contains(Player.getPlayerFromUser(event.getAuthor(), this)) && !rhymingwords.contains(event.getMessage().getContentDisplay())){
                 //wrong word
                 playingrelatedwords = false;
                 channel.sendMessage(unrespondedplayers.get(0).getName() + "said a word that didn't rhyme!");
                 channel.sendMessage(unrespondedplayers.get(0).getDrinkText());
                 unrespondedplayers.addAll(players);
-                return;
+                Random randomword = new Random();
+                currentWord = startingwords[randomword.nextInt(startingwords.length)];
             }
         }
-        //Only one player left
-        playingrelatedwords = false;
-        channel.sendMessage(unrespondedplayers.get(0).getName() + "was last!");
-        channel.sendMessage(unrespondedplayers.get(0).getDrinkText());
-        unrespondedplayers.addAll(players);
+        if(unrespondedplayers.size() == 1){
+            //Only one player left
+            playingrelatedwords = false;
+            channel.sendMessage(unrespondedplayers.get(0).getName() + "was last!");
+            channel.sendMessage(unrespondedplayers.get(0).getDrinkText());
+            unrespondedplayers.addAll(players);
+            Random randomword = new Random();
+            currentWord = startingwords[randomword.nextInt(startingwords.length)];
+        }
     }
 }
