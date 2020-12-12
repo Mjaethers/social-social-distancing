@@ -17,7 +17,7 @@ public class Main extends ListenerAdapter {
         builder.setActivity(Activity.playing("Ring of Fire"));
         builder.build();*/
 
-        JDA jda = JDABuilder.createDefault("Njk3NTA2NDYxNjMwMjAxOTI4.Xo4Rgw.ZzFU6H4e0ofhXDDh6l6whYfrxzw")
+        JDA jda = JDABuilder.createDefault(System.getenv("DISCORD_TOKEN"))
                 .addEventListeners(new Main(), new ThumbMaster())
                 .build();
     }
