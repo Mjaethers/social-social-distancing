@@ -18,7 +18,6 @@ public class Player {
         mates  = new ArrayList<Player>();
         System.out.println("new player: " + playerid);
     }
-
     @Override
     public boolean equals(Object object){
         if(object instanceof Player){

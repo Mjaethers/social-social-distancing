@@ -20,9 +20,11 @@ public class ThumbMaster extends ListenerAdapter {
     }
     @Override
     public void onMessageReceived(MessageReceivedEvent event){
+        System.out.print("ThumbMaster Listener working");
         if(event.getChannel().equals(channel)){
-            if (event.getAuthor().equals(master) && event.getMessage().getContentDisplay().toLowerCase().equals("thumb")){
+            if (event.getAuthor().equals(master) && event.getMessage().getContentDisplay().toLowerCase().contains("thumb")){
                 unrespondedplayers = new ArrayList<>();
+                unrespondedplayers.clear();
                 unrespondedplayers.addAll(players);
                 unrespondedplayers.remove(master);
                 gamerunning = true;
