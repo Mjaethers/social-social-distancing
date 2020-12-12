@@ -69,7 +69,8 @@ public class Player {
     }
 
     public void addMate(Player Player){
-        if(!this.hasMate(Player)){ //makes sure the two players are not already mates- prevents infinite recursive loop
+        if(!this.hasMate(Player) && !this.equals(Player)){
+            //makes sure the two players are not already mates- prevents infinite recursive loop and not mating to self
             mates.add(Player);
             Player.addMate(this);
         }
@@ -87,5 +88,8 @@ public class Player {
         }
         stringBuilder.append(" drink");
         return stringBuilder.toString();
+    }
+    public void removeMates(){
+        mates.clear();
     }
 }

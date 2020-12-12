@@ -200,6 +200,9 @@ public class RingOfFire{
     public void mate(MessageReceivedEvent event){
         if(event.getAuthor().equals(mater) && players.contains(Player.getPlayerFromUser(event.getMessage().getMentionedUsers().get(0), this))){
             Player.getPlayerFromUser(mater, this).addMate(Player.getPlayerFromUser(event.getMessage().getMentionedUsers().get(0), this));
+            for(Player p: players){
+                p.removeMates();
+            }
             event.getChannel().sendMessage(mater.getName() + ", you are now mates with: " + Player.getPlayerFromUser(mater, this).getMatesString()).queue();
             mater = null;
         }
